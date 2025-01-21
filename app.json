@@ -1,0 +1,51 @@
+{
+  "expo": {
+    "name": "The Rhizome",
+    "slug": "the-rhizome",
+    "version": "1.1.6",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "scheme": "rhizome",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#000000"
+    },
+    "ios": {
+      "config": {
+        "usesNonExemptEncryption": false
+      },
+      "icon": "./assets/icon.png",
+      "bundleIdentifier": "com.theRhizome",
+      "supportsTablet": true,
+      "minVersion": "15.1"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.theRhizome"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-secure-store",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow Rhizome to access your photos to let you share them to Farcaster.",
+          "cameraPermission": "Allow Rhizome to access your camera to let you share photos to Farcaster."
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "e562d559-292a-4fdf-b39a-1e3ff05d8d2e"
+      }
+    }
+  }
+}
