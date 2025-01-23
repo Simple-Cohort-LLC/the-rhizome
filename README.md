@@ -1,10 +1,11 @@
 ## The Rhizome Mobile Client
 
-Expo mobile app for [The Rhizome](https://the-rhizome.com/) by [@GRITCULT](https://x.com/GRITCULT).
+Expo mobile app for [The Rhizome](https://the-rhizome.com/) by [@GRITCULT](https://x.com/GRITCULT). Read full back story [here](https://paragraph.xyz/@sean07.eth/the-rhizome).
 
 ### Production Deployments
 
 [Android](https://play.google.com/store/apps/details?id=com.theRhizome)
+[iOS](https://testflight.apple.com/join/e4gXKFn7) _TestFlight only, Apple waa being a diva in the review process._
 
 ### About
 
