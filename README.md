@@ -6,7 +6,7 @@ Expo mobile app for [The Rhizome](https://the-rhizome.com/) by [@GRITCULT](https
 
 [Android](https://play.google.com/store/apps/details?id=com.theRhizome)
 
-[iOS](https://testflight.apple.com/join/e4gXKFn7) _TestFlight only, Apple waa being a diva in the review process._
+[iOS](https://testflight.apple.com/join/e4gXKFn7) _TestFlight only, Apple was being a diva in the review process._
 
 ### About
 
