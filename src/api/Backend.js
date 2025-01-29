@@ -153,6 +153,17 @@ export const unfollowUser = async (signerUuid, followeeFid) => {
   }
 };
 
+export const fetchUserFollows = async (fid, targetFid) => {
+  const res = await fetchWithHeaders(
+    `${API_URL}/user-follows?fid=${fid}&targetFid=${targetFid}`
+  );
+  if (!res.ok) {
+    throw new Error("Failed to fetch user follows");
+  }
+  const result = await res.json();
+  return result;
+};
+
 export const fetchZora = async () => {
   const res = await fetchWithHeaders(`${API_URL}/zora`);
   if (!res.ok) {

@@ -7,16 +7,22 @@ import {
   StyleSheet,
   Platform,
   ScrollView,
+  Alert,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import { useApp } from "../../context/AppContext";
-import { fetchRepliesForCast, submitReaction } from "../../api/Backend";
+import {
+  fetchRepliesForCast,
+  fetchUserFollows,
+  followUser,
+  submitReaction,
+} from "../../api/Backend";
 import Replies from "../organisms/Replies";
 import { ReactionTypes } from "../../consts/reactions";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-const Avatar = ({ url, style, zIndex = 1 }) => {
+const Avatar = ({ url, style, following, target, setIsFollowing }) => {
+  const { signerUuid } = useApp();
   const [error, setError] = useState(false);
 
   if (error || !url) {
@@ -28,7 +34,7 @@ const Avatar = ({ url, style, zIndex = 1 }) => {
             backgroundColor: "#4a5568",
             justifyContent: "center",
             alignItems: "center",
-            zIndex,
+            zIndex: 1,
           },
         ]}
       >
@@ -37,12 +43,38 @@ const Avatar = ({ url, style, zIndex = 1 }) => {
     );
   }
 
+  const handleFollow = async () => {
+    followUser(signerUuid, target).then((res) => {
+      if (res.error) {
+        Alert.alert("Error", "Error following cast author.");
+      } else {
+        setIsFollowing(true);
+      }
+    });
+  };
+
   return (
-    <Image
-      source={{ uri: url }}
-      style={[style, { zIndex }]}
-      onError={() => setError(true)}
-    />
+    <View>
+      <Image
+        source={{ uri: url }}
+        style={[style, { zIndex: 1 }]}
+        onError={() => setError(true)}
+      />
+      {!following && (
+        <TouchableOpacity
+          style={{
+            position: "absolute",
+            bottom: -10,
+            right: 0,
+            padding: 5,
+            zIndex: 2,
+          }}
+          onPress={handleFollow}
+        >
+          <Ionicons name="add-circle" size={24} color="white" />
+        </TouchableOpacity>
+      )}
+    </View>
   );
 };
 
@@ -53,7 +85,7 @@ const CastDetail = ({ route }) => {
 
   const {
     hash,
-    author: { display_name, pfp_url, username },
+    author: { display_name, pfp_url, username, fid: authorFid },
     reactions: { likes, recasts, likes_count, recasts_count },
     replies: { count: replies_count },
     embeds,
@@ -67,6 +99,7 @@ const CastDetail = ({ route }) => {
   const [loadingReplies, setLoadingReplies] = useState(false);
   const [showReplies, setShowReplies] = useState(false);
   const [expandBio, setExpandBio] = useState(false);
+  const [isFollowing, setIsFollowing] = useState(true);
 
   useEffect(() => {
     if (likes.some((like) => like.fid == fid)) {
@@ -92,6 +125,19 @@ const CastDetail = ({ route }) => {
 
     fetchReplies();
   }, [hash]);
+
+  useEffect(() => {
+    const fetchFollows = async () => {
+      try {
+        const userFollows = await fetchUserFollows(fid, authorFid);
+        setIsFollowing(userFollows.users[0].viewer_context.following);
+      } catch (error) {
+        console.error("Error fetching user follows:", error);
+      }
+    };
+
+    if (fid && authorFid) fetchFollows();
+  }, [fid, authorFid]);
 
   const postReaction = async (reactionType) => {
     submitReaction(signerUuid, hash, reactionType).then((res) => {
@@ -142,7 +188,13 @@ const CastDetail = ({ route }) => {
       <View style={styles.infoContainer}>
         <ScrollView contentContainerStyle={styles.scrollContent}>
           <View style={styles.authorContainer}>
-            <Avatar url={pfp_url} style={styles.pfp} />
+            <Avatar
+              url={pfp_url}
+              style={styles.pfp}
+              following={isFollowing}
+              target={authorFid}
+              setIsFollowing={setIsFollowing}
+            />
             <View style={styles.authorDetails}>
               <Text style={styles.displayName}>{display_name}</Text>
               <Text style={styles.username}>@{username}</Text>

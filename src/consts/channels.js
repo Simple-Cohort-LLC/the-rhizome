@@ -25,6 +25,9 @@ export const CURATED_CHANNELS = [
   "objects",
   "f1",
   "techarchive",
+  "nostalgia",
+  "streetphotos",
+  "jordan",
 ];
 
 export const CHANNEL_GROUPS = {
