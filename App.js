@@ -21,6 +21,7 @@ import { useApp } from "./src/context/AppContext";
 import { useNavigation } from "@react-navigation/native";
 import ZoraDetail from "./src/components/screens/ZoraDetail";
 import CastPage from "./src/components/screens/CastPage";
+import ZoraFeed from "./src/components/screens/ZoraFeed";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -57,6 +58,16 @@ function TabNavigator() {
           headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="search-outline" color={color} size={size} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Zora"
+        component={ZoraFeed}
+        options={{
+          headerShown: false,
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="sparkles-outline" color={color} size={size} />
           ),
         }}
       />
