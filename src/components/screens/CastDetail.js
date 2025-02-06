@@ -20,6 +20,7 @@ import {
 } from "../../api/Backend";
 import Replies from "../organisms/Replies";
 import { ReactionTypes } from "../../consts/reactions";
+import { PanGestureHandler, State } from "react-native-gesture-handler";
 
 const Avatar = ({ url, style, following, target, setIsFollowing }) => {
   const { signerUuid } = useApp();
@@ -172,102 +173,114 @@ const CastDetail = ({ route }) => {
     }
   };
 
+  const onHandlerStateChange = (event) => {
+    if (event.nativeEvent.state === State.END) {
+      const { translationX, velocityX } = event.nativeEvent;
+
+      if (translationX > 100 && velocityX > 500) {
+        navigation.goBack();
+      }
+    }
+  };
+
   return (
-    <View style={styles.container}>
-      <TouchableOpacity
-        style={styles.backButton}
-        onPress={() => navigation.goBack()}
-      >
-        <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
-      </TouchableOpacity>
+    <PanGestureHandler onHandlerStateChange={onHandlerStateChange}>
+      <View style={styles.container}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => navigation.goBack()}
+        >
+          <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
+        </TouchableOpacity>
 
-      <View style={styles.imageContainer}>
-        <Image source={{ uri: embeds[0].url }} style={styles.castImage} />
-      </View>
+        <View style={styles.imageContainer}>
+          <Image source={{ uri: embeds[0].url }} style={styles.castImage} />
+        </View>
 
-      <View style={styles.infoContainer}>
-        <ScrollView contentContainerStyle={styles.scrollContent}>
-          <View style={styles.authorContainer}>
-            <Avatar
-              url={pfp_url}
-              style={styles.pfp}
-              following={isFollowing}
-              target={authorFid}
-              setIsFollowing={setIsFollowing}
-            />
-            <View style={styles.authorDetails}>
-              <Text style={styles.displayName}>{display_name}</Text>
-              <Text style={styles.username}>@{username}</Text>
-              {channel && (
-                <TouchableOpacity onPress={navigateToChannel}>
-                  <Text style={styles.channel}>
-                    /{typeof channel === "object" ? channel.name : channel}
+        <View style={styles.infoContainer}>
+          <ScrollView contentContainerStyle={styles.scrollContent}>
+            <View style={styles.authorContainer}>
+              <Avatar
+                url={pfp_url}
+                style={styles.pfp}
+                following={isFollowing}
+                target={authorFid}
+                setIsFollowing={setIsFollowing}
+              />
+              <View style={styles.authorDetails}>
+                <Text style={styles.displayName}>{display_name}</Text>
+                <Text style={styles.username}>@{username}</Text>
+                {channel && (
+                  <TouchableOpacity onPress={navigateToChannel}>
+                    <Text style={styles.channel}>
+                      /{typeof channel === "object" ? channel.name : channel}
+                    </Text>
+                  </TouchableOpacity>
+                )}
+              </View>
+            </View>
+            <View style={styles.bioContainer}>
+              <Text
+                style={styles.castText}
+                numberOfLines={expandBio ? undefined : 1}
+              >
+                {cast.text}
+              </Text>
+              {cast.text.length > 40 && (
+                <TouchableOpacity onPress={() => setExpandBio(!expandBio)}>
+                  <Text style={styles.expandButton}>
+                    {expandBio ? "[-]" : "[+]"}
                   </Text>
                 </TouchableOpacity>
               )}
             </View>
-          </View>
-          <View style={styles.bioContainer}>
-            <Text
-              style={styles.castText}
-              numberOfLines={expandBio ? undefined : 1}
-            >
-              {cast.text}
-            </Text>
-            {cast.text.length > 40 && (
-              <TouchableOpacity onPress={() => setExpandBio(!expandBio)}>
-                <Text style={styles.expandButton}>
-                  {expandBio ? "[-]" : "[+]"}
-                </Text>
+            <View style={styles.buttonsContainer}>
+              <TouchableOpacity
+                style={[styles.reactionButton, isLiked && styles.likedButton]}
+                onPress={handleLike}
+              >
+                <Ionicons
+                  name={isLiked ? "heart" : "heart-outline"}
+                  size={24}
+                  color={isLiked ? "red" : "white"}
+                />
+                <Text style={styles.reactionCount}>{likes_count}</Text>
               </TouchableOpacity>
-            )}
-          </View>
-          <View style={styles.buttonsContainer}>
-            <TouchableOpacity
-              style={[styles.reactionButton, isLiked && styles.likedButton]}
-              onPress={handleLike}
-            >
-              <Ionicons
-                name={isLiked ? "heart" : "heart-outline"}
-                size={24}
-                color={isLiked ? "red" : "white"}
-              />
-              <Text style={styles.reactionCount}>{likes_count}</Text>
-            </TouchableOpacity>
 
-            <TouchableOpacity
-              style={[
-                styles.reactionButton,
-                isRecasted && styles.recastedButton,
-              ]}
-              onPress={handleRecast}
-            >
-              <Ionicons
-                name="repeat"
-                size={24}
-                color={isRecasted ? "green" : "white"}
-              />
-              <Text style={styles.reactionCount}>{recasts_count}</Text>
-            </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  styles.reactionButton,
+                  isRecasted && styles.recastedButton,
+                ]}
+                onPress={handleRecast}
+              >
+                <Ionicons
+                  name="repeat"
+                  size={24}
+                  color={isRecasted ? "green" : "white"}
+                />
+                <Text style={styles.reactionCount}>{recasts_count}</Text>
+              </TouchableOpacity>
 
-            <TouchableOpacity
-              style={styles.reactionButton}
-              onPress={() => setShowReplies(true)}
-            >
-              <Ionicons name="chatbubble-outline" size={24} color="white" />
-              <Text style={styles.reactionCount}>{replies_count}</Text>
-            </TouchableOpacity>
-          </View>
-        </ScrollView>
+              <TouchableOpacity
+                style={styles.reactionButton}
+                onPress={() => setShowReplies(true)}
+              >
+                <Ionicons name="chatbubble-outline" size={24} color="white" />
+                <Text style={styles.reactionCount}>{replies_count}</Text>
+              </TouchableOpacity>
+            </View>
+          </ScrollView>
+        </View>
+
+        {showReplies &&
+          (loadingReplies ? (
+            <></>
+          ) : (
+            <Replies replies={replies} close={() => setShowReplies(false)} />
+          ))}
       </View>
-
-      {showReplies &&
-        (loadingReplies ? (
-          <></>
-        ) : (
-          <Replies replies={replies} close={() => setShowReplies(false)} />
-        ))}
-    </View>
+    </PanGestureHandler>
   );
 };
 

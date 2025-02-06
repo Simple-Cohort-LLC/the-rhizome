@@ -6,9 +6,13 @@ import {
   TouchableOpacity,
   StyleSheet,
   Linking,
+  ScrollView,
+  Platform,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
+import { HEADER_HEIGHT } from "../organisms/Header";
+import { PanGestureHandler, State } from "react-native-gesture-handler";
 
 const ZoraDetail = ({ route }) => {
   const { cast } = route.params;
@@ -18,24 +22,38 @@ const ZoraDetail = ({ route }) => {
 
   const url = `https://zora.co/collect/${network}:${contract}/${tokenId}`;
 
+  const onHandlerStateChange = (event) => {
+    if (event.nativeEvent.state === State.END) {
+      const { translationX, velocityX } = event.nativeEvent;
+
+      if (translationX > 100 && velocityX > 500) {
+        navigation.goBack();
+      }
+    }
+  };
+
   return (
-    <View style={styles.container}>
-      <TouchableOpacity
-        style={styles.backButton}
-        onPress={() => navigation.goBack()}
-      >
-        <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
-      </TouchableOpacity>
+    <PanGestureHandler onHandlerStateChange={onHandlerStateChange}>
+      <View style={styles.container}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => navigation.goBack()}
+        >
+          <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
+        </TouchableOpacity>
 
-      <Image source={{ uri: embeds[0].url }} style={styles.castImage} />
+        <ScrollView>
+          <Image source={{ uri: embeds[0].url }} style={styles.castImage} />
 
-      <Text style={styles.displayName}>{name}</Text>
-      <Text style={styles.channel}>{description}</Text>
+          <Text style={styles.displayName}>{name}</Text>
+          <Text style={styles.channel}>{description}</Text>
 
-      <TouchableOpacity onPress={() => Linking.openURL(url)}>
-        <Text style={styles.zoraLink}>View on Zora</Text>
-      </TouchableOpacity>
-    </View>
+          <TouchableOpacity onPress={() => Linking.openURL(url)}>
+            <Text style={styles.zoraLink}>View on Zora</Text>
+          </TouchableOpacity>
+        </ScrollView>
+      </View>
+    </PanGestureHandler>
   );
 };
 
@@ -44,11 +62,12 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
     backgroundColor: "#121212",
+    paddingTop: HEADER_HEIGHT + 48,
   },
   backButton: {
     position: "absolute",
+    top: HEADER_HEIGHT + 16,
     left: 20,
-    bottom: 30,
     backgroundColor: "#1E1E1E",
     width: 60,
     height: 60,
@@ -60,7 +79,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.8,
     shadowRadius: 2,
-    zIndex: 1999,
+    zIndex: 999,
   },
   displayName: {
     fontSize: 14,
