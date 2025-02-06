@@ -24,7 +24,7 @@ The Rhizome is the aesthetic first [Farcaster](https://www.farcaster.xyz/) clien
 Some feature ideas:
 
 - Add a crypto wallet and make Farcaster frames work.
-- Make use of the [Zora](./src/components/screens/ZoraDetail.js) integration, pull in content from Zora into a separate tab. Make the Zora content mintable with a crypto wallet.
+- ~~Make use of the [Zora](./src/components/screens/ZoraDetail.js) integration, pull in content from Zora into a separate tab.~~ Make the Zora content mintable with a crypto wallet.
 - Pull in content from other sources like [are.na](https://dev.are.na/documentation/channels).
 
 ### Requirements
